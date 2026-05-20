@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carter Hartzel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0a1628;
+      --navy2:   #0f1f3d;
+      --accent:  #3b82f6;
+      --accent2: #60a5fa;
+      --light:   #eff6ff;
+      --muted:   #64748b;
+      --border:  #e2e8f0;
+      --white:   #ffffff;
+      --glow:    rgba(59,130,246,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.65;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(10, 22, 40, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(59,130,246,0.15);
+      display: flex;
+      justify-content: center;
+      gap: 0.25rem;
+      padding: 0.6rem 1rem;
+    }
+    nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    nav a:hover {
+      color: var(--white);
+      background: rgba(59,130,246,0.15);
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+      padding: 8rem 1.5rem 6rem;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    #hero h1 {
+      font-size: clamp(2.8rem, 7vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin: 0.9rem auto 1.1rem;
+    }
+    #hero .subtitle {
+      font-size: 1.1rem;
+      color: #93c5fd;
+      margin-bottom: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.35rem 0;
+      font-size: 0.88rem;
+      color: #bfdbfe;
+    }
+    .contact-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(147,197,253,0.25);
+      background: rgba(59,130,246,0.1);
+      margin: 0.2rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-pill:hover {
+      border-color: rgba(147,197,253,0.55);
+      background: rgba(59,130,246,0.2);
+    }
+    .contact-pill a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+    .contact-pill span { color: #bfdbfe; }
+
+    /* ─── SECTIONS ─── */
+    .section-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--navy2);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    h2 .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+      transition: box-shadow 0.25s, transform 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 30px rgba(59,130,246,0.12), 0 2px 8px rgba(0,0,0,0.06);
+      transform: translateY(-3px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.4rem;
+    }
+    .card-company {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.15rem;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy2);
+      letter-spacing: -0.01em;
+    }
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.15rem;
+    }
+    .card-date {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+      background: var(--light);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+    .card-location {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .card-sub-location {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+
+    ul.bullets {
+      list-style: none;
+      padding: 0;
+      margin-top: 0.6rem;
+    }
+    ul.bullets li {
+      padding: 0.22rem 0 0.22rem 1.3rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+    ul.bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.65rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 1rem;
+    }
+    .tag {
+      background: var(--light);
+      color: #1d4ed8;
+      border-radius: 6px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* ─── EDUCATION ─── */
+    .edu-grid { display: grid; gap: 1.2rem; }
+    .edu-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 1.2rem;
+      align-items: start;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .edu-card:hover {
+      box-shadow: 0 8px 30px rgba(59,130,246,0.1);
+      transform: translateY(-2px);
+    }
+    .edu-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+      flex-shrink: 0;
+    }
+    .edu-body {}
+    .edu-degree { font-weight: 700; font-size: 1rem; color: var(--navy2); letter-spacing: -0.01em; }
+    .edu-school { font-size: 0.88rem; color: var(--accent); font-weight: 600; margin-top: 0.15rem; }
+    .edu-meta   { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+    .edu-badge  {
+      background: var(--light);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 0.1rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .edu-courses { font-size: 0.8rem; color: #475569; margin-top: 0.5rem; line-height: 1.55; }
+
+    /* ─── SKILLS ─── */
+    .skills-categories { display: grid; gap: 1.5rem; }
+    .skill-group-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .skill-chip {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #334155;
+      transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+      cursor: default;
+    }
+    .skill-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--navy);
+      color: #475569;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(59,130,246,0.1);
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-inner { max-width: 900px; margin: 0 auto; }
+    .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 0.75rem; }
+    .footer-copy { color: #334155; font-size: 0.78rem; }
+
+    @media (max-width: 600px) {
+      .card-header { flex-direction: column; }
+      .card-meta { align-items: flex-start; }
+      .edu-card { grid-template-columns: 1fr; }
+      .edu-icon { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#education">Education</a>
+    <a href="#skills">Skills</a>
+  </nav>
+
+  <!-- HERO -->
+  <header id="hero">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-content">
+      <h1>Carter Hartzel</h1>
+      <div class="hero-divider"></div>
+      <p class="subtitle">Business Analytics &amp; Data Professional</p>
+      <div class="contact-row">
+        <span class="contact-pill"><span>📍</span><span>Kernersville, NC</span></span>
+        <a class="contact-pill" href="https://mail.google.com/mail/?view=cm&to=carterwhartzel@gmail.com" target="_blank" rel="noopener"><span>✉</span><span>carterwhartzel@gmail.com</span></a>
+        <span class="contact-pill"><span>📞</span><span>(862) 266-5165</span></span>
+        <a class="contact-pill" href="https://www.linkedin.com/in/carter-hartzel/" target="_blank" rel="noopener"><span>🔗</span><span>LinkedIn</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- WORK EXPERIENCE -->
+  <div class="section-wrap reveal" id="experience">
+    <h2><span class="section-icon">💼</span>Work Experience<span class="line"></span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Darden Restaurants</div>
+          <div class="card-title">Graduate Consultant</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-date">Oct 2025 – Apr 2026</span>
+          <span class="card-location">Remote</span>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Built and deployed an interactive Streamlit dashboard to analyze marketing performance across <strong>13,993+ observations</strong> and <strong>109 locations</strong>.</li>
+        <li>Applied CUPED variance reduction (96%), uncovering statistically significant sales lifts of <strong>+$7,293 (DoorDash)</strong> and <strong>+$5,663 (Uber Eats)</strong> per store per week, informing channel prioritization and budget allocation.</li>
+        <li>Developed dashboards with parallel trends validation and regional breakdowns, enabling stakeholders to validate assumptions and analyze performance across stores.</li>
+        <li>Translated complex statistical models into clear, actionable insights for non-technical stakeholders, supporting business decisions.</li>
+        <li>Automated reporting workflows using Streamlit, improving efficiency and reducing manual analysis time.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Causal Inference</span>
+        <span class="tag">A/B Testing</span>
+        <span class="tag">CUPED</span>
+        <span class="tag">Data Visualization</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Handshake</div>
+          <div class="card-title">AI Trainer</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-date">Dec 2025 – Apr 2026</span>
+          <span class="card-location">Remote</span>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Wrote <strong>50+ well-researched prompts per week</strong> to test AI model accuracy, identify hallucinations, and evaluate factual reliability across complex topics.</li>
+        <li>Evaluated AI system performance through structured testing and quality analysis of complex responses.</li>
+        <li>Reviewed AI-generated responses against quality standards and provided clear feedback to support model refinement and performance improvement.</li>
+        <li>Collaborated with teams to support continuous improvement and refinement of AI systems.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Prompt Engineering</span>
+        <span class="tag">AI Evaluation</span>
+        <span class="tag">Quality Assurance</span>
+        <span class="tag">Generative AI</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Northwestern Mutual</div>
+          <div class="card-title">Financial Advisor</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-date">Aug 2024 – Jan 2025</span>
+          <span class="card-location">Florham Park, NJ</span>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Managed and maintained relationships with <strong>200+ clients</strong>, ensuring high levels of professionalism and trust.</li>
+        <li>Built financial models identifying strategies with up to <strong>6% higher projected returns</strong> based on client risk profiles.</li>
+        <li>Provided client-focused financial advisory services, translating complex financial data into clear recommendations.</li>
+        <li>Supported sales efforts by identifying client needs and recommending tailored financial solutions.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Financial Modeling</span>
+        <span class="tag">Excel</span>
+        <span class="tag">Client Relations</span>
+        <span class="tag">CRM</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- PROJECT EXPERIENCE -->
+  <div class="section-wrap reveal" id="projects">
+    <h2><span class="section-icon">🚀</span>Project Experience<span class="line"></span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Data Analytics Challenge</div>
+          <div class="card-title">Fraud Detection Model — Deacon Financial Services</div>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Built an ensemble fraud detection model using XGBoost, Random Forest, and LightGBM, achieving <strong>99.2% accuracy</strong> and <strong>81% recall</strong> in identifying high-risk transactions.</li>
+        <li>Evaluated and compared 5+ machine learning models to optimize fraud detection performance.</li>
+        <li>Engineered features and analyzed key fraud drivers to support risk detection, targeted mitigation strategies, and improved financial decision-making.</li>
+        <li>Prepared findings with structured charts and graphs to communicate key predictors and recommendations to stakeholders.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Python</span>
+        <span class="tag">XGBoost</span>
+        <span class="tag">Random Forest</span>
+        <span class="tag">LightGBM</span>
+        <span class="tag">Feature Engineering</span>
+        <span class="tag">Machine Learning</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Digital Marketing Simternship</div>
+          <div class="card-title">Google Ads Campaign Management</div>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Exceeded revenue targets by generating <strong>$34,000+</strong> in campaign revenue through managing Google Ads (search and display) using keyword optimization and SEO strategies.</li>
+        <li>Achieved a <strong>6%+ conversion rate</strong> by analyzing user behavior and optimizing landing pages to improve engagement and purchase outcomes.</li>
+        <li>Improved campaign performance through A/B testing display ads, comparing users who added items to cart vs. those who only viewed landing pages to refine targeting and messaging.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Google Ads</span>
+        <span class="tag">SEO</span>
+        <span class="tag">A/B Testing</span>
+        <span class="tag">Conversion Optimization</span>
+        <span class="tag">Digital Marketing</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Segmentation Project</div>
+          <div class="card-title">Customer Clustering Model — Movie Theater Chain</div>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Built a machine learning clustering model to develop customer profiles for a movie theater chain seeking to improve profitability by targeting young adults (ages 15–30).</li>
+        <li>Used survey data capturing interests and behaviors to identify distinct customer segments and characteristics to inform targeted marketing strategies.</li>
+        <li>Visualized results and presented key insights and recommendations in a slide deck for business stakeholders.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Python</span>
+        <span class="tag">Clustering</span>
+        <span class="tag">Machine Learning</span>
+        <span class="tag">Market Segmentation</span>
+        <span class="tag">Data Storytelling</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-company">Data Visualization Project</div>
+          <div class="card-title">Global Retail Performance Dashboard</div>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li>Designed Tableau dashboards with interactive filters and drill-down capabilities to translate KPIs into clear visual insights across regions and time periods.</li>
+        <li>Applied data storytelling principles to ensure charts and graphs communicated trends and performance metrics in intuitive, easy-to-interpret formats.</li>
+      </ul>
+      <div class="tag-row">
+        <span class="tag">Tableau</span>
+        <span class="tag">Data Visualization</span>
+        <span class="tag">KPI Reporting</span>
+        <span class="tag">Data Storytelling</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- EDUCATION -->
+  <div class="section-wrap reveal" id="education">
+    <h2><span class="section-icon">🎓</span>Education<span class="line"></span></h2>
+    <div class="edu-grid">
+
+      <div class="edu-card">
+        <div class="edu-icon">🌲</div>
+        <div class="edu-body">
+          <div class="edu-degree">Master of Science in Business Analytics</div>
+          <div class="edu-school">Wake Forest University School of Business — Winston-Salem, NC</div>
+          <div class="edu-meta">
+            <span>May 2026</span>
+            <span class="edu-badge">Emotional Intelligence Award</span>
+          </div>
+          <div class="edu-courses">Relevant Courses: Supply Chain &amp; Process Analysis · Data Management for Business Analytics · Data Storytelling for Impact · Marketing Analytics</div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-icon">🐻</div>
+        <div class="edu-body">
+          <div class="edu-degree">Bachelor of Business Administration</div>
+          <div class="edu-school">Drew University — Madison, NJ</div>
+          <div class="edu-meta">
+            <span>May 2025</span>
+            <span class="edu-badge">GPA: 3.81</span>
+            <span class="edu-badge">Magna Cum Laude</span>
+          </div>
+          <div class="edu-courses">Relevant Courses: Introduction to Statistics · Introduction to Accounting · Introduction to Marketing · Digital Marketing</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- SKILLS -->
+  <div class="section-wrap reveal" id="skills">
+    <h2><span class="section-icon">⚡</span>Skills<span class="line"></span></h2>
+    <div class="skills-categories">
+
+      <div>
+        <div class="skill-group-label">Programming &amp; Data</div>
+        <div class="skills-grid">
+          <span class="skill-chip">Python</span>
+          <span class="skill-chip">R</span>
+          <span class="skill-chip">SQL</span>
+          <span class="skill-chip">Excel (Expert)</span>
+          <span class="skill-chip">Stata</span>
+          <span class="skill-chip">SPSS</span>
+          <span class="skill-chip">Google Cloud (GCP)</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">Visualization &amp; Reporting</div>
+        <div class="skills-grid">
+          <span class="skill-chip">Tableau</span>
+          <span class="skill-chip">Power BI</span>
+          <span class="skill-chip">Streamlit</span>
+          <span class="skill-chip">Data Visualization</span>
+          <span class="skill-chip">Data Storytelling</span>
+          <span class="skill-chip">KPI Reporting</span>
+          <span class="skill-chip">Dashboard Dev</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">Analytics &amp; Machine Learning</div>
+        <div class="skills-grid">
+          <span class="skill-chip">Machine Learning</span>
+          <span class="skill-chip">Statistical Analysis</span>
+          <span class="skill-chip">A/B Testing</span>
+          <span class="skill-chip">Causal Inference</span>
+          <span class="skill-chip">Feature Engineering</span>
+          <span class="skill-chip">Financial Modeling</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">Marketing &amp; AI</div>
+        <div class="skills-grid">
+          <span class="skill-chip">Google Ads / SEO</span>
+          <span class="skill-chip">Prompt Engineering</span>
+          <span class="skill-chip">Generative AI</span>
+          <span class="skill-chip">Microsoft Office</span>
+          <span class="skill-chip">Stakeholder Comms</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://mail.google.com/mail/?view=cm&to=carterwhartzel@gmail.com" target="_blank" rel="noopener">carterwhartzel@gmail.com</a>
+        <a href="https://www.linkedin.com/in/carter-hartzel/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <div class="footer-copy">Carter Hartzel &nbsp;·&nbsp; Business Analytics &amp; Data Professional</div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── PARTICLE SYSTEM ── */
+    (function () {
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles;
+      const COUNT = 90;
+      const CONNECT_DIST = 130;
+
+      function resize() {
+        const hero = document.getElementById('hero');
+        W = canvas.width  = hero.offsetWidth;
+        H = canvas.height = hero.offsetHeight;
+      }
+
+      function rand(min, max) { return Math.random() * (max - min) + min; }
+
+      function mkParticle() {
+        const hue = rand(200, 230); // blue range
+        const alpha = rand(0.25, 0.75);
+        return {
+          x: rand(0, W),
+          y: rand(0, H),
+          vx: rand(-0.35, 0.35),
+          vy: rand(-0.35, 0.35),
+          r: rand(1, 2.8),
+          color: `hsla(${hue}, 80%, 70%, ${alpha})`,
+          glowColor: `hsla(${hue}, 90%, 75%, 0.6)`,
+        };
+      }
+
+      function init() {
+        resize();
+        particles = Array.from({ length: COUNT }, mkParticle);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // connections
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < CONNECT_DIST) {
+              const opacity = (1 - dist / CONNECT_DIST) * 0.18;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(100, 170, 255, ${opacity})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // dots
+        for (const p of particles) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = p.glowColor;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -10) p.x = W + 10;
+          else if (p.x > W + 10) p.x = -10;
+          if (p.y < -10) p.y = H + 10;
+          else if (p.y > H + 10) p.y = -10;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); });
+      init();
+      draw();
+    })();
+
+    /* ── SCROLL REVEAL ── */
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
